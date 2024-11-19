@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vought International</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <img src="images/vought-meta.png" alt="vought_logo" class="logo">
+        <h1 class="site-title">Vought International</h1>
+    </header>
+
+    <main>
+        <section class="carousel">
+            <h2>Heróis Afiliados</h2>
+            <div class="carousel-container" id="heroes-carousel"></div>
+        </section>
+
+        <section class="actions">
+            <h2>Gerenciar Heróis</h2>
+            <button id="create-hero-btn">Criar Herói</button>
+        </section>
+
+        <div id="create-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="modal-title">Adicionar Novo Herói</h2>
+                <form id="entity-form">
+                    <label for="entity-name">Nome:</label>
+                    <input type="text" id="entity-name" required>
+
+                    <label for="entity-real-name">Nome (Real):</label>
+                    <input type="text" id="entity-real-name" required>
+
+                    <label for="entity-sex">Sexo:</label>
+                    <input type="radio" id="man" name="Sexo" value="Masculino">
+                    <label for="man">Masculino</label>
+                    <input type="radio" id="woman" name="Sexo" value="Feminino">
+                    <label for="woman">Feminino</label>
+                    <input type="radio" id="other" name="Sexo" value="Outro">
+                    <label for="other">Outro</label>
+
+                    <label for="entity-height">Altura (em metros):</label>
+                    <input type="number" id="entity-height" min="0.5" max="3.0" step="0.01" required>
+
+                    <label for="entity-weight">Peso (em kg):</label>
+                    <input type="number" id="entity-weight" min="10" max="500" required>
+
+                    <label for="entity-local">Local de Nascimento:</label>
+                    <input type="text" id="entity-local" required>
+
+                    <label for="entity-birth">Data de Nascimento:</label>
+                    <input type="date" id="entity-birth" required>
+
+                    <label for="entity-image">Imagem:</label>
+                    <input type="file" id="entity-image" accept="image/*">
+
+                    <button type="submit">Salvar</button>
+                    <button type="button" id="close-modal">Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="index.js"></script>
+</body>
+</html>
