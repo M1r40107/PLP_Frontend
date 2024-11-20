@@ -34,12 +34,11 @@
                     <input type="text" id="entity-real-name" required>
 
                     <label for="entity-sex">Sexo:</label>
-                    <input type="radio" id="man" name="Sexo" value="Masculino">
-                    <label for="man">Masculino</label>
-                    <input type="radio" id="woman" name="Sexo" value="Feminino">
-                    <label for="woman">Feminino</label>
-                    <input type="radio" id="other" name="Sexo" value="Outro">
-                    <label for="other">Outro</label>
+                    <select id="entity-sex">
+                        <option value="man">Masculino</option>
+                        <option value="woman">Feminino</option>
+                        <option value="other">Outro</option>
+                    </select>
 
                     <label for="entity-height">Altura (em metros):</label>
                     <input type="number" id="entity-height" min="0.5" max="3.0" step="0.01" required>

@@ -80,12 +80,6 @@ function updateCarousel() {
         card.innerHTML = `
             <div class="hero-image1" style="background-image: url('${hero.image}')"></div>
             <h3>${hero.name}</h3>
-            <p><strong>Nome Real:</strong> ${hero.realName}</p>
-            <p><strong>Sexo:</strong> ${hero.sex}</p>
-            <p><strong>Altura:</strong> ${hero.height}m</p>
-            <p><strong>Peso:</strong> ${hero.weight}kg</p>
-            <p><strong>Local:</strong> ${hero.local}</p>
-            <p><strong>Data de Nascimento:</strong> ${hero.birth}</p>
         `;
         heroesCarousel.appendChild(card);
     });
