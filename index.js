@@ -1,66 +1,14 @@
-const heroes = [
-
-    {
-        name: "Homelander",
-        realName: "John",
-        sex: "Masculino",
-        height: "1.80",
-        weight: "90",
-        local: "Desconhecido",
-        birth: "1981-06-10",
-        image: "images/capitao_patria.jpg",
-    },
-
-    {
-        name: "StarLight",
-        realName: "Annie January",
-        sex: "Feminino",
-        height: "1.65",
-        weight: "55",
-        local: "Estados Unidos",
-        birth: "1991-05-01",
-        image: "images/starlight.jpeg",
-    },
-
-    {
-        name: "Queen Maeve",
-        realName: "Maeve",
-        sex: "Feminino",
-        height: "1.75",
-        weight: "70",
-        local: "Estados Unidos",
-        birth: "1980-04-15",
-        image: "images/queen_maeve.jpeg",
-    },
-
-    {
-        name: "A-Train",
-        realName: "Reggie Franklin",
-        sex: "Masculino",
-        height: "1.77",
-        weight: "80",
-        local: "Estados Unidos",
-        birth: "1986-03-01",
-        image: "images/a-train.jpeg",
-    },
-
-    {
-        name: "The Deep",
-        realName: "Kevin Moskowitz",
-        sex: "Masculino",
-        height: "1.80",
-        weight: "85",
-        local: "Estados Unidos",
-        birth: "1986-07-25",
-        image: "images/the-deep.jpeg",
-    },
-];
-
+const heroesCarousel = document.getElementById("heroes-carousel");
 const createHeroBtn = document.getElementById("create-hero-btn");
 const createModal = document.getElementById("create-modal");
 const closeModalBtn = document.getElementById("close-modal");
 const entityForm = document.getElementById("entity-form");
-const heroesCarousel = document.getElementById("heroes-carousel");
+
+let heroes = JSON.parse(localStorage.getItem("heroes")) || [];
+
+function saveHeroesToLocalStorage() {
+    localStorage.setItem("heroes", JSON.stringify(heroes));
+}
 
 function showModal() {
     createModal.classList.remove("hidden");
@@ -72,7 +20,7 @@ function closeModal() {
 }
 
 function updateCarousel() {
-    heroesCarousel.innerHTML = ""; 
+    heroesCarousel.innerHTML = "";
     heroes.forEach((hero) => {
         const card = document.createElement("div");
         card.classList.add("carousel-item");
@@ -103,13 +51,15 @@ entityForm.addEventListener("submit", (e) => {
         const reader = new FileReader();
         reader.onload = (event) => {
             newHero.image = event.target.result;
-            heroes.push(newHero); 
-            updateCarousel(); 
+            heroes.push(newHero);
+            saveHeroesToLocalStorage();
+            updateCarousel();
         };
         reader.readAsDataURL(imageFile);
     } else {
-        newHero.image = "placeholder.png"; 
+        newHero.image = "placeholder.png";
         heroes.push(newHero);
+        saveHeroesToLocalStorage();
         updateCarousel();
     }
 
@@ -117,7 +67,7 @@ entityForm.addEventListener("submit", (e) => {
 });
 
 createHeroBtn.addEventListener("click", showModal);
+
 closeModalBtn.addEventListener("click", closeModal);
 
-// Inicializa o carrossel com os heróis existentes
 updateCarousel();
