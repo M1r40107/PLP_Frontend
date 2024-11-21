@@ -4,8 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vought International</title>
+    <link rel="stylesheet" href="crimes.css">
 </head>
 <body>
-    
+    <header>
+        <img src="images/vought-meta.png" alt="vought_logo" class="logo">
+        <h1 class="site-title">Vought International</h1>
+    </header>    
+    <main>
+        <section class="carousel">
+            <h2>Crimes Registrados:</h2>
+            <div class="carousel-container" id="heroes-carousel"></div>
+        </section>
+
+        <section class="actions">
+            <h2>Registrar crime</h2>
+            <button id="create-crime-btn">Registrar</button>
+        </section>
+
+        <div id="create-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="modal-title">Novo Crime</h2>
+                <form id="entity-form">
+                    <label for="entity-name">Nome:</label>
+                    <input type="text" id="entity-name" required>
+
+                    <label for="entity-description">Descrição:</label>
+                    <input type="textarea" id="entity-description" required>
+
+                    <label for="entity-date">Data:</label>
+                    <input type="date" id="entity-date" required>
+
+                    <label for="entity-responsible">Herói Responsável:</label>
+                    <input type="text" id="entity-responsible" required>
+
+                    <label for="entity-severity">Severidade:</label>
+                    <input type="text" id="entity-severity" required>
+
+                    <button type="submit">Salvar</button>
+                    <button type="button" id="close-modal">Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </main>
 </body>
 </html>
