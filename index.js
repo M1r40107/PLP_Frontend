@@ -22,46 +22,101 @@ function saveHeroesToLocalStorage() {
     localStorage.setItem("heroes", JSON.stringify(heroes));
 }
 
-function updateCarousel() {
-    heroesCarousel.innerHTML = ""; 
-    heroes.forEach((hero, index) => {
-        const card = document.createElement("div");
-        card.classList.add("carousel-item");
+async function updateCarousel() {
+    try {
+        // Faz a requisição para o backend na rota "/"
+        const response = await fetch("http://localhost:8080/");
+        
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar dados: ${response.statusText}`);
+        }
+        
+        // Obtém os dados dos heróis como uma lista de nomes
+        const heroes = await response.json();
 
-        card.innerHTML = `
-            <div class="hero-image1" style="background-image: url('${hero.image}')"></div>
-            <h3>${hero.name}</h3>
-            <button class="view-btn" data-id="${index}">Ver</button>
-            <button class="edit-btn" data-id="${index}">Editar</button>
-            <button class="delete-btn" data-id="${index}">Excluir</button>
-        `;
-        heroesCarousel.appendChild(card);
-    });
+        // Limpa o conteúdo do carrossel
+        heroesCarousel.innerHTML = ""; 
 
-    document.querySelectorAll(".view-btn").forEach((btn) =>
-        btn.addEventListener("click", (e) => viewHero(e.target.dataset.id))
-    );
+        // Adiciona os heróis ao carrossel
+        heroes.forEach((heroName, index) => {
+            const card = document.createElement("div");
+            card.classList.add("carousel-item");
 
-    document.querySelectorAll(".edit-btn").forEach((btn) =>
-        btn.addEventListener("click", (e) => editHero(e.target.dataset.id))
-    );
+            // Define a imagem com base no nome do herói
+            const imagePath = `assets/images/${heroName.toLowerCase().replace(/ /g, "_")}.jpg`;
 
-    document.querySelectorAll(".delete-btn").forEach((btn) =>
-        btn.addEventListener("click", (e) => deleteHero(e.target.dataset.id))
-    );
+            card.innerHTML = `
+                <div class="hero-image1" style="background-image: url('${imagePath}')"></div>
+                <h3>${heroName}</h3>
+                <button class="view-btn" data-id="${index}">Ver</button>
+                <button class="edit-btn" data-id="${index}">Editar</button>
+                <button class="delete-btn" data-id="${index}">Excluir</button>
+            `;
+            heroesCarousel.appendChild(card);
+        });
+
+        // Adiciona os event listeners para os botões
+        document.querySelectorAll(".view-btn").forEach((btn) =>
+            btn.addEventListener("click", (e) => viewHero(e.target.dataset.id))
+        );
+
+        document.querySelectorAll(".edit-btn").forEach((btn) =>
+            btn.addEventListener("click", (e) => editHero(e.target.dataset.id))
+        );
+
+        document.querySelectorAll(".delete-btn").forEach((btn) =>
+            btn.addEventListener("click", (e) => deleteHero(e.target.dataset.id))
+        );
+
+    } catch (error) {
+        console.error("Erro ao atualizar o carrossel:", error);
+    }
 }
 
-function viewHero(index) {
-    const hero = heroes[index];
-    alert(`
-        Nome: ${hero.name}
-        Nome Real: ${hero.realName}
-        Sexo: ${hero.sex}
-        Altura: ${hero.height} m
-        Peso: ${hero.weight} kg
-        Local de Nascimento: ${hero.local}
-        Data de Nascimento: ${hero.birth}
-    `);
+async function viewHero(index) {
+    try {
+        // Obtém o nome do herói clicado
+        const heroName = heroes[index].name; // Use .name para acessar o nome do herói
+        console.log("Enviando nome do herói:", heroName);
+
+        // Faz a requisição para a API
+        const response = await fetch("http://localhost:8080/heroi", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ nome_heroi: heroName }),
+        });
+
+        console.log("Status da resposta:", response.status);
+
+        // Verifica se a resposta foi bem-sucedida
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar informações do herói: ${response.statusText}`);
+        }
+
+        // Extrai os dados do herói da resposta JSON
+        const heroDetails = await response.json();
+        console.log("Detalhes do herói recebidos:", heroDetails);
+
+        // Exibe os detalhes do herói em um alert
+        alert(`
+            Nome de Herói: ${heroDetails.nome_heroi}
+            Nome Real: ${heroDetails.nome_real}
+            Sexo: ${heroDetails.sexo}
+            Peso: ${heroDetails.peso} kg
+            Altura: ${heroDetails.altura} m
+            Data de Nascimento: ${new Date(heroDetails.data_nascimento).toLocaleDateString()}
+            Local de Nascimento: ${heroDetails.local_nascimento}
+            Popularidade: ${heroDetails.popularidade}%
+            Status de Atividade: ${heroDetails.status_atividade}
+            Força: ${heroDetails.forca}
+            Poderes: ${heroDetails.poder.length > 0 ? heroDetails.poder.join(", ") : "Nenhum"}
+        `);
+    } catch (error) {
+        console.error("Erro ao buscar detalhes do herói:", error);
+        alert("Não foi possível carregar as informações do herói.");
+    }
 }
 
 function editHero(index) {
