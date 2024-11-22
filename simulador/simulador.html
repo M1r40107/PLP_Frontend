@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Batalhas - Vought International</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="simulador.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <img src="../images/vought-meta.png" alt="vought_logo" class="logo">
+        <h1 class="site-title">Simulador de Batalhas</h1>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="../index.html" class="nav-button">Voltar ao Menu</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="battle-container">
+            <div class="hero-selector">
+                <div class="hero-select-box">
+                    <h3>Herói 1</h3>
+                    <select id="hero1-select">
+                        <option value="">Selecione um herói</option>
+                    </select>
+                    <div id="hero1-image" class="hero-image"></div>
+                    <div id="hero1-info" class="hero-info">
+                        <p class="select-prompt">Selecione um herói para ver suas estatísticas</p>
+                    </div>
+                </div>
+
+                <div class="versus">VS</div>
+
+                <div class="hero-select-box">
+                    <h3>Herói 2</h3>
+                    <select id="hero2-select">
+                        <option value="">Selecione um herói</option>
+                    </select>
+                    <div id="hero2-image" class="hero-image"></div>
+                    <div id="hero2-info" class="hero-info">
+                        <p class="select-prompt">Selecione um herói para ver suas estatísticas</p>
+                    </div>
+                </div>
+            </div>
+
+            <button id="simulate-battle" class="battle-button">
+                Iniciar Batalha
+            </button>
+
+            <div id="battle-result" class="battle-result hidden">
+                <h2>Resultado da Batalha</h2>
+                <div id="result-content"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="simulador.js"></script>
+</body>
+</html>
