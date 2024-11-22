@@ -8,11 +8,13 @@ body {
 header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 15px 30px;
-    background-color: #141414;
+    background-color: #1d1d1d;
     position: sticky;
     top: 0;
     z-index: 10;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .logo {
