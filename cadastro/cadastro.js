@@ -43,8 +43,7 @@ document.getElementById("hero-form").addEventListener("submit", async (e) => {
 
     // Formatação da data
     const birthDate = document.getElementById("birth-date").value;
-    const [year, month, day] = birthDate.split('-');
-    const formattedDate = `${year}-${month}-${day}`;
+    const formattedDate = new Date(birthDate + "T00:00:00.000Z").toISOString();
 
     const heroData = {
         heroi: {
@@ -52,8 +51,8 @@ document.getElementById("hero-form").addEventListener("submit", async (e) => {
             sexo: document.getElementById("sex").value,
             peso: parseFloat(document.getElementById("weight").value),
             altura: parseFloat(document.getElementById("height").value),
-            data_nasc: formattedDate,
-            local_nasc: document.getElementById("birthplace").value,
+            data_nascimento: formattedDate,
+            local_nascimento: document.getElementById("birthplace").value,
             nome_heroi: document.getElementById("hero-name").value,
             popularidade: parseInt(document.getElementById("popularity").value, 10),
             status_atividade: document.getElementById("status").value, // Atualizado para status_atividade
