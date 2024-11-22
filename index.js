@@ -6,7 +6,7 @@ const closeModalBtn = document.getElementById("close-modal");
 const entityForm = document.getElementById("entity-form");
 const heroesCarousel = document.getElementById("heroes-carousel");
 
-let editingIndex = null;
+let editingHeroName = null;
 
 function showModal() {
     createModal.classList.remove("hidden");
@@ -15,7 +15,7 @@ function showModal() {
 function closeModal() {
     createModal.classList.add("hidden");
     entityForm.reset();
-    editingIndex = null;
+    editingHeroName = null;
 }
 
 function saveHeroesToLocalStorage() {
@@ -31,7 +31,7 @@ async function updateCarousel() {
 
         const heroes = await response.json();
 
-        heroesCarousel.innerHTML = ""; 
+        heroesCarousel.innerHTML = "";
 
         heroes.forEach((heroName, index) => {
             const card = document.createElement("div");
@@ -63,7 +63,6 @@ async function updateCarousel() {
         console.error("Erro ao atualizar o carrossel:", error);
     }
 }
-
 
 async function viewHero(heroName) {
     try {
@@ -109,7 +108,6 @@ async function openEditModal(heroName) {
     try {
         console.log("Nome do herói enviado:", heroName);
 
-        // Enviar requisição para obter os dados detalhados do herói
         const response = await fetch("http://localhost:8080/heroi", {
             method: "POST",
             headers: {
@@ -124,7 +122,7 @@ async function openEditModal(heroName) {
             throw new Error(`Erro ao buscar informações do herói: ${response.statusText}`);
         }
 
-        const hero = await response.json(); // Dados completos do herói
+        const hero = await response.json();
         console.log("Dados do herói recebidos:", hero);
 
         // Preencher o formulário com os dados recebidos
@@ -135,11 +133,10 @@ async function openEditModal(heroName) {
         document.getElementById("entity-weight").value = hero.peso || "";
         document.getElementById("entity-local").value = hero.local_nascimento || "";
         document.getElementById("entity-birth").value = hero.data_nascimento
-            ? new Date(hero.data_nascimento).toISOString().split("T")[0] // Formatar a data para o campo
+            ? new Date(hero.data_nascimento).toISOString().split("T")[0]
             : "";
 
-        // Armazenar o nome do herói como referência para salvar mudanças
-        editingIndex = heroName;
+        editingHeroName = hero.nome_heroi; // Nome do herói sendo editado
 
         // Mostrar o modal de edição
         showModal();
@@ -150,75 +147,75 @@ async function openEditModal(heroName) {
 }
 
 
-function deleteHero(index) {
-    const hero = heroes[index];
-    const confirmDelete = confirm(`Deseja realmente excluir "${hero.name}"?`);
-    if (confirmDelete) {
-        heroes.splice(index, 1);
-        saveHeroesToLocalStorage();
-        updateCarousel();
-    }
-}
-
-entityForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
+async function saveHeroChanges() {
     const name = document.getElementById("entity-name").value;
     const realName = document.getElementById("entity-real-name").value;
     const sex = document.getElementById("entity-sex").value;
-    const height = document.getElementById("entity-height").value;
-    const weight = document.getElementById("entity-weight").value;
+    const height = parseFloat(document.getElementById("entity-height").value);  // Certifique-se de que o valor é um número
+    const weight = parseFloat(document.getElementById("entity-weight").value);  // Certifique-se de que o valor é um número
+    const birth = document.getElementById("entity-birth").value; // Data no formato YYYY-MM-DD
     const local = document.getElementById("entity-local").value;
-    const birth = document.getElementById("entity-birth").value;
-    const imageFile = document.getElementById("entity-image").files[0];
+    const popularity = parseInt(document.getElementById("entity-popularity").value, 10);  // Convertendo para número inteiro
+    const strength = parseInt(document.getElementById("entity-strength").value, 10);  // Convertendo para número inteiro
+    const status = document.getElementById("entity-status").value;
 
-    if (editingIndex !== null) {
-        const hero = heroes[editingIndex];
-        hero.name = name;
-        hero.realName = realName;
-        hero.sex = sex;
-        hero.height = height;
-        hero.weight = weight;
-        hero.local = local;
-        hero.birth = birth;
+    // Função para converter o formato de data YYYY-MM-DD para YYYY-MM-DDTHH:mm:ssZ
+    const convertDateToISO8601 = (dateString) => {
+        const [year, month, day] = dateString.split("-");
+        return `${year}-${month}-${day}T00:00:00Z`;  // ISO 8601 com hora e fuso horário UTC
+    };
 
-        if (imageFile) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                hero.image = event.target.result;
-                saveHeroesToLocalStorage();
-                updateCarousel();
-            };
-            reader.readAsDataURL(imageFile);
-        } else {
-            saveHeroesToLocalStorage();
-            updateCarousel();
+    // Converte a data de nascimento para o formato ISO 8601
+    const formattedBirthDate = convertDateToISO8601(birth);
+
+    const heroData = {
+        nome_heroi: name,
+        heroi_atualizado: {
+            nome_heroi: realName,
+            nome_real: realName,
+            sexo: sex,
+            altura: height,
+            peso: weight,
+            data_nascimento: formattedBirthDate, // Agora com o formato ISO 8601
+            local_nascimento: local,
+            popularidade: popularity,
+            forca: strength,
+            status_atividade: status,
         }
-    } else {
-        const newHero = { name, realName, sex, height, weight, local, birth, image: null };
+    };
 
-        if (imageFile) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                newHero.image = event.target.result;
-                heroes.push(newHero);
-                saveHeroesToLocalStorage();
-                updateCarousel();
-            };
-            reader.readAsDataURL(imageFile);
-        } else {
-            newHero.image = "placeholder.png";
-            heroes.push(newHero);
-            saveHeroesToLocalStorage();
-            updateCarousel();
+    try {
+        console.log(JSON.stringify(heroData))
+        const response = await fetch('http://localhost:8080/editar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(heroData),  // Envia os dados no corpo da requisição
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao salvar alterações do herói: ${response.statusText}`);
         }
+
+        const result = await response.json();
+        alert('Heroi atualizado com sucesso!');
+        console.log(result);
+
+    } catch (error) {
+        console.error('Erro ao salvar alterações do herói:', error);
+        alert('Não foi possível salvar as alterações do herói.');
     }
+}
 
-    closeModal();
+
+entityForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    saveHeroChanges();
 });
 
 createHeroBtn.addEventListener("click", () => {
-    window.location.href = "cadastro/cadastro.html"; // Redireciona para a página de criação
+    window.location.href = "cadastro/cadastro.html";
 });
 
 closeModalBtn.addEventListener("click", closeModal);
