@@ -37,7 +37,7 @@ async function updateCarousel() {
             const card = document.createElement("div");
             card.classList.add("carousel-item");
 
-            const imagePath = `assets/images/${heroName.toLowerCase().replace(/ /g, "_")}.jpg`;
+            const imagePath = `images/${heroName.toLowerCase().replace(/ /g, "_")}.jpeg`;
 
             card.innerHTML = `
                 <div class="hero-image1" style="background-image: url('${imagePath}')"></div>
@@ -183,63 +183,60 @@ async function saveHeroChanges() {
     const name = document.getElementById("entity-name").value;
     const realName = document.getElementById("entity-real-name").value;
     const sex = document.getElementById("entity-sex").value;
-    const height = parseFloat(document.getElementById("entity-height").value);  // Certifique-se de que o valor é um número
-    const weight = parseFloat(document.getElementById("entity-weight").value);  // Certifique-se de que o valor é um número
-    const birth = document.getElementById("entity-birth").value; // Data no formato YYYY-MM-DD
+    const height = parseFloat(document.getElementById("entity-height").value);
+    const weight = parseFloat(document.getElementById("entity-weight").value);
+    const birth = document.getElementById("entity-birth").value;
     const local = document.getElementById("entity-local").value;
-    const popularity = parseInt(document.getElementById("entity-popularity").value, 10);  // Convertendo para número inteiro
-    const strength = parseInt(document.getElementById("entity-strength").value, 10);  // Convertendo para número inteiro
+    const popularity = parseInt(document.getElementById("entity-popularity").value, 10);
+    const strength = parseInt(document.getElementById("entity-strength").value, 10);
     const status = document.getElementById("entity-status").value;
 
-    // Função para converter o formato de data YYYY-MM-DD para YYYY-MM-DDTHH:mm:ssZ
+    // Função para converter o formato de data
     const convertDateToISO8601 = (dateString) => {
         const [year, month, day] = dateString.split("-");
-        return `${year}-${month}-${day}T00:00:00Z`;  // ISO 8601 com hora e fuso horário UTC
+        return `${year}-${month}-${day}T00:00:00Z`;
     };
 
-    // Converte a data de nascimento para o formato ISO 8601
     const formattedBirthDate = convertDateToISO8601(birth);
 
     const heroData = {
-        nome_heroi: name,
+        nome_heroi: editingHeroName, // Nome do herói original que está sendo editado
         heroi_atualizado: {
-            nome_heroi: realName,
+            nome_heroi: name,
             nome_real: realName,
             sexo: sex,
             altura: height,
             peso: weight,
-            data_nascimento: formattedBirthDate, // Agora com o formato ISO 8601
+            data_nascimento: formattedBirthDate,
             local_nascimento: local,
             popularidade: popularity,
             forca: strength,
-            status_atividade: status,
+            status_atividade: status
         }
     };
 
     try {
-        console.log(JSON.stringify(heroData))
         const response = await fetch('http://localhost:8080/editar', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(heroData),  // Envia os dados no corpo da requisição
+            body: JSON.stringify(heroData),
         });
 
         if (!response.ok) {
             throw new Error(`Erro ao salvar alterações do herói: ${response.statusText}`);
         }
-
-        const result = await response.json();
-        alert('Heroi atualizado com sucesso!');
-        console.log(result);
-
+        
+        alert('Herói atualizado com sucesso!');
+        closeModal();
+        updateCarousel();
+        
     } catch (error) {
         console.error('Erro ao salvar alterações do herói:', error);
         alert('Não foi possível salvar as alterações do herói.');
     }
 }
-
 
 
 
