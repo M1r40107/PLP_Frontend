@@ -3,9 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vought International</title>
+    <title>Gerenciamento de Missões - Vought International</title>
+    <link rel="stylesheet" href="missions.css">
 </head>
 <body>
-    
+    <header>
+        <img src="../images/vought-meta.png" alt="Vought Logo" class="logo">
+        <h1 class="site-title">Gerenciamento de Missões</h1>
+    </header>
+    <main>
+        <section class="mission-list">
+            <h2>Missões Registradas:</h2>
+            <div class="mission-container" id="mission-list">
+                <!-- Missões serão carregadas dinamicamente aqui -->
+            </div>
+        </section>
+        <section class="actions">
+            <h2>Criar Nova Missão</h2>
+            <button id="create-mission-btn">Nova Missão</button>
+        </section>
+
+        <div id="create-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Criar Missão</h2>
+                <form id="mission-form">
+                    <label for="mission-name">Nome da Missão:</label>
+                    <input type="text" id="mission-name" required>
+
+                    <label for="mission-description">Descrição:</label>
+                    <textarea id="mission-description" required></textarea>
+
+                    <label for="mission-difficulty">Dificuldade(1 a 10):</label>
+                    <input type="number" id="mission-difficulty" min="1" max="10" required>
+
+                    <label for="mission-heroes">Heróis Designados:</label>
+                    <input type="text" id="mission-heroes" required>
+
+                    <label for="mission-result">Resultado(Sucesso/Fracasso):</label>
+                    <select id="mission-result">
+                        <option value="success">Sucesso</option>
+                        <option value="failure">Fracasso</option>
+                    </select>
+
+                    <button type="submit">Salvar Missão</button>
+                    <button type="button" id="close-modal">Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="missions.js"></script>
 </body>
 </html>
