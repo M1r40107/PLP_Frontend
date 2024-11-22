@@ -21,6 +21,15 @@ header h1 {
     color: #ffffff;
 }
 
+
+.site-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
 /* Botão principal */
 button {
     background-color: #1d72b8;
