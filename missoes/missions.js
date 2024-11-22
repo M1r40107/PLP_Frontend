@@ -18,6 +18,74 @@ closeModalBtn.addEventListener("click", () => {
     createModal.classList.add("hidden");
 });
 
+
+async function loadMissions() {
+    try {
+        console.log("Iniciando requisição para /missoes..."); // Debug
+        const response = await fetch('http://localhost:8080/missoes', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+
+        console.log("Status da resposta:", response.status); // Debug
+
+        if (!response.ok) {
+            throw new Error(`Erro ao carregar missões: ${response.status}`);
+        }
+
+        const missionsData = await response.json();
+        console.log("Dados recebidos:", missionsData); // Debug
+
+        if (!Array.isArray(missionsData)) {
+            console.error("Dados recebidos não são um array:", missionsData);
+            return;
+        }
+
+        updateMissionList(missionsData);
+    } catch (error) {
+        console.error('Erro detalhado ao carregar missões:', error);
+        alert('Não foi possível carregar as missões.');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Página carregada, iniciando carregamento de missões..."); // Debug
+    loadMissions();
+});
+
+// Modificar a função updateMissionList para usar os dados do backend
+function updateMissionList(missions) {
+    missionList.innerHTML = "";
+    missions.forEach((mission) => {
+        const missionItem = document.createElement("div");
+        missionItem.classList.add("mission-item");
+
+        missionItem.innerHTML = `
+            <h3>${mission.nome_missao}</h3>
+            <p>${mission.descricao}</p>
+            <p><strong>Dificuldade:</strong> ${mission.nivel_dificuldade}</p>
+            <p><strong>Herói:</strong> ${mission.nome_heroi}</p>
+            <p><strong>Resultado:</strong> ${mission.resultado || 'Pendente'}</p>
+            <p><strong>Recompensa:</strong> ${mission.recompensa || 'A definir'}</p>
+            <button class="edit-btn" data-id="${mission.id_missao}">Editar</button>
+            <button class="delete-btn" data-id="${mission.id_missao}">Excluir</button>
+        `;
+
+        missionList.appendChild(missionItem);
+    });
+
+    // Adicionar eventos aos botões
+    document.querySelectorAll(".edit-btn").forEach((btn) => {
+        btn.addEventListener("click", handleEditMission);
+    });
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.addEventListener("click", handleDeleteMission);
+    });
+}
+
 // Adicionar ou editar missão
 missionForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -41,40 +109,11 @@ missionForm.addEventListener("submit", (e) => {
         missions.push(missionData);
     }
 
-    updateMissionList();
     createModal.classList.add("hidden");
     missionForm.reset();
 });
 
-// Atualizar a lista de missões
-function updateMissionList() {
-    missionList.innerHTML = "";
-    missions.forEach((mission, index) => {
-        const missionItem = document.createElement("div");
-        missionItem.classList.add("mission-item");
 
-        missionItem.innerHTML = `
-            <h3>${mission.name}</h3>
-            <p>${mission.description}</p>
-            <p><strong>Dificuldade:</strong> ${mission.difficulty}</p>
-            <p><strong>Heróis:</strong> ${mission.heroes.join(", ")}</p>
-            <p><strong>Resultado:</strong> ${mission.result}</p>
-            <p><strong>Recompensa:</strong> ${mission.reward}</p>
-            <button class="edit-btn" data-index="${index}">Editar</button>
-            <button class="delete-btn" data-index="${index}">Excluir</button>
-        `;
-
-        missionList.appendChild(missionItem);
-    });
-
-    // Adicionar eventos aos botões de editar e excluir
-    document.querySelectorAll(".edit-btn").forEach((btn) => {
-        btn.addEventListener("click", handleEditMission);
-    });
-    document.querySelectorAll(".delete-btn").forEach((btn) => {
-        btn.addEventListener("click", handleDeleteMission);
-    });
-}
 
 // Editar missão
 function handleEditMission(event) {
@@ -102,6 +141,3 @@ function handleDeleteMission(event) {
         updateMissionList(); // Atualizar lista
     }
 }
-
-// Inicializar
-updateMissionList();

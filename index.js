@@ -1,5 +1,3 @@
-const heroes = JSON.parse(localStorage.getItem("heroes")) || [];
-
 const createHeroBtn = document.getElementById("create-hero-btn");
 const createModal = document.getElementById("create-modal");
 const closeModalBtn = document.getElementById("close-modal");
@@ -152,11 +150,11 @@ async function viewHero(heroName) {
             Popularidade: ${heroDetails.popularidade}%
             Status de Atividade: ${heroDetails.status_atividade}
             Força: ${heroDetails.forca}
+            Vitorias: ${heroDetails.qtd_vitorias}
+            Derrotas: ${heroDetails.qtd_derrotas}
             Poderes: ${heroDetails.poder.length > 0 ? heroDetails.poder.join(", ") : "Nenhum"}
+            
         `);
-        // Colocar isso dentro daqui /\
-        // Vitorias: ${heroDetails.vitorias}
-        // Derrotas: ${heroDetails.derrotas}
 
     } catch (error) {
         console.error("Erro ao buscar detalhes do herói:", error);
