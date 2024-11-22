@@ -217,7 +217,10 @@ entityForm.addEventListener("submit", (e) => {
     closeModal();
 });
 
-createHeroBtn.addEventListener("click", showModal);
+createHeroBtn.addEventListener("click", () => {
+    window.location.href = "cadastro/cadastro.html"; // Redireciona para a página de criação
+});
+
 closeModalBtn.addEventListener("click", closeModal);
 
 updateCarousel();
