@@ -33,29 +33,37 @@ async function updateCarousel() {
 
         heroesCarousel.innerHTML = ""; 
 
-        heroes.forEach((heroName) => {
+        heroes.forEach((heroName, index) => {
             const card = document.createElement("div");
             card.classList.add("carousel-item");
 
             const imagePath = `assets/images/${heroName.toLowerCase().replace(/ /g, "_")}.jpg`;
 
             card.innerHTML = `
-                <div class="hero-image1" style="background-image: url('${imagePath}')"></div>
-                <h3>${heroName}</h3>
-                <button class="view-btn" data-name="${heroName}">Ver</button>
-                <button class="edit-btn">Editar</button>
-                <button class="delete-btn">Excluir</button>
-            `;
+            <div class="hero-image1" style="background-image: url('${imagePath}')"></div>
+            <h3>${heroName}</h3>
+            <button class="view-btn" data-name="${heroName}">Ver</button>
+            <button class="edit-btn" data-name="${heroName}">Editar</button>
+            <button class="delete-btn" onclick="deleteHero(${index})">Excluir</button>
+        `;
+        
             heroesCarousel.appendChild(card);
         });
 
+        // View Hero
         document.querySelectorAll(".view-btn").forEach((btn) =>
             btn.addEventListener("click", (e) => viewHero(e.target.dataset.name))
+        );
+
+        // Edit Hero
+        document.querySelectorAll(".edit-btn").forEach((btn) =>
+            btn.addEventListener("click", (e) => openEditModal(e.target.dataset.name))
         );
     } catch (error) {
         console.error("Erro ao atualizar o carrossel:", error);
     }
 }
+
 
 async function viewHero(heroName) {
     try {
@@ -97,73 +105,50 @@ async function viewHero(heroName) {
     }
 }
 
-async function editHero(index) {
-    const hero = heroes[index];
-    editingIndex = index;
+async function openEditModal(heroName) {
+    try {
+        console.log("Nome do herói enviado:", heroName);
 
-    // Preenche os campos do formulário com os dados do herói
-    document.getElementById("entity-name").value = hero.name;
-    document.getElementById("entity-real-name").value = hero.realName;
-    document.getElementById("entity-sex").value = hero.sex;
-    document.getElementById("entity-height").value = hero.height;
-    document.getElementById("entity-weight").value = hero.weight;
-    document.getElementById("entity-local").value = hero.local;
-    document.getElementById("entity-birth").value = hero.birth;
-
-    // Abre o modal
-    showModal();
-
-    // Adiciona o listener para envio do formulário ao salvar as alterações
-    entityForm.onsubmit = async (e) => {
-        e.preventDefault();
-
-        const updatedHero = {
-            nome_heroi: hero.name,
-            heroi_atualizado: {
-                nome_heroi: document.getElementById("entity-name").value,
-                nome_real: document.getElementById("entity-real-name").value,
-                sexo: document.getElementById("entity-sex").value,
-                altura: parseFloat(document.getElementById("entity-height").value),
-                peso: parseFloat(document.getElementById("entity-weight").value),
-                data_nascimento: new Date(document.getElementById("entity-birth").value).toISOString(),
-                local_nascimento: document.getElementById("entity-local").value,
-                popularidade: hero.popularidade || 50, // Exemplo de valor padrão
-                forca: hero.forca || 50, // Exemplo de valor padrão
-                status_atividade: hero.status_atividade || "Ativo", // Exemplo de valor padrão
+        // Enviar requisição para obter os dados detalhados do herói
+        const response = await fetch("http://localhost:8080/heroi", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
             },
-        };
+            body: JSON.stringify({ nome_heroi: heroName }),
+        });
 
-        try {
-            const response = await fetch("http://localhost:8080/editar", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(updatedHero),
-            });
+        console.log("Resposta da API:", response);
 
-            if (!response.ok) {
-                throw new Error(`Erro ao atualizar herói: ${response.statusText}`);
-            }
-
-            const result = await response.json();
-            console.log("Herói atualizado com sucesso:", result);
-
-            // Atualiza os dados localmente e recarrega o carrossel
-            heroes[index] = {
-                ...heroes[index],
-                ...updatedHero.heroi_atualizado,
-            };
-
-            saveHeroesToLocalStorage();
-            updateCarousel();
-            closeModal();
-        } catch (error) {
-            console.error("Erro ao editar o herói:", error);
-            alert("Não foi possível salvar as alterações do herói.");
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar informações do herói: ${response.statusText}`);
         }
-    };
+
+        const hero = await response.json(); // Dados completos do herói
+        console.log("Dados do herói recebidos:", hero);
+
+        // Preencher o formulário com os dados recebidos
+        document.getElementById("entity-name").value = hero.nome_heroi || "";
+        document.getElementById("entity-real-name").value = hero.nome_real || "";
+        document.getElementById("entity-sex").value = hero.sexo || "";
+        document.getElementById("entity-height").value = hero.altura || "";
+        document.getElementById("entity-weight").value = hero.peso || "";
+        document.getElementById("entity-local").value = hero.local_nascimento || "";
+        document.getElementById("entity-birth").value = hero.data_nascimento
+            ? new Date(hero.data_nascimento).toISOString().split("T")[0] // Formatar a data para o campo
+            : "";
+
+        // Armazenar o nome do herói como referência para salvar mudanças
+        editingIndex = heroName;
+
+        // Mostrar o modal de edição
+        showModal();
+    } catch (error) {
+        console.error("Erro ao buscar dados do herói:", error);
+        alert("Não foi possível carregar os dados do herói para edição.");
+    }
 }
+
 
 function deleteHero(index) {
     const hero = heroes[index];
