@@ -36,7 +36,15 @@ document.getElementById("hero-form").addEventListener("submit", async (e) => {
 
     const selectedPowers = Array.from(
         document.querySelectorAll("#powers-list input:checked")
-    ).map((checkbox) => JSON.parse(checkbox.value));
+    ).map((checkbox) => {
+        const poder = JSON.parse(checkbox.value);
+        return poder.id_poder; // Agora enviamos apenas o id do poder
+    });
+
+    // Formatação da data
+    const birthDate = document.getElementById("birth-date").value;
+    const [year, month, day] = birthDate.split('-');
+    const formattedDate = `${year}-${month}-${day}`;
 
     const heroData = {
         heroi: {
@@ -44,17 +52,19 @@ document.getElementById("hero-form").addEventListener("submit", async (e) => {
             sexo: document.getElementById("sex").value,
             peso: parseFloat(document.getElementById("weight").value),
             altura: parseFloat(document.getElementById("height").value),
-            data_nasc: document.getElementById("birth-date").value,
+            data_nasc: formattedDate,
             local_nasc: document.getElementById("birthplace").value,
             nome_heroi: document.getElementById("hero-name").value,
             popularidade: parseInt(document.getElementById("popularity").value, 10),
-            status: document.getElementById("status").value,
+            status_atividade: document.getElementById("status").value, // Atualizado para status_atividade
             forca: parseInt(document.getElementById("strength").value, 10),
         },
-        poderes: selectedPowers,
+        ids_poderes: selectedPowers,
     };
 
     try {
+        console.log("Dados enviados:", JSON.stringify(heroData)); // Debug
+
         const response = await fetch("http://localhost:8080/heroicadastra", {
             method: "POST",
             headers: {
@@ -63,13 +73,16 @@ document.getElementById("hero-form").addEventListener("submit", async (e) => {
             body: JSON.stringify(heroData),
         });
 
-        if (!response.ok) throw new Error("Erro ao salvar herói.");
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erro ao salvar herói: ${errorText}`);
+        }
 
         alert("Herói cadastrado com sucesso!");
         document.getElementById("hero-form").reset();
         document.getElementById("powers-section").classList.add("hidden");
     } catch (error) {
         console.error("Erro ao salvar herói:", error);
-        alert("Não foi possível salvar o herói.");
+        alert("Não foi possível salvar o herói: " + error.message);
     }
 });
