@@ -40,12 +40,12 @@ async function updateCarousel() {
             const imagePath = `assets/images/${heroName.toLowerCase().replace(/ /g, "_")}.jpg`;
 
             card.innerHTML = `
-            <div class="hero-image1" style="background-image: url('${imagePath}')"></div>
-            <h3>${heroName}</h3>
-            <button class="view-btn" data-name="${heroName}">Ver</button>
-            <button class="edit-btn" data-name="${heroName}">Editar</button>
-            <button class="delete-btn" onclick="deleteHero(${index})">Excluir</button>
-        `;
+                <div class="hero-image1" style="background-image: url('${imagePath}')"></div>
+                <h3>${heroName}</h3>
+                <button class="view-btn" data-name="${heroName}">Ver</button>
+                <button class="edit-btn" data-name="${heroName}">Editar</button>
+                <button class="delete-btn" data-name="${heroName}">Excluir</button>
+            `;
         
             heroesCarousel.appendChild(card);
         });
@@ -59,11 +59,16 @@ async function updateCarousel() {
         document.querySelectorAll(".edit-btn").forEach((btn) =>
             btn.addEventListener("click", (e) => openEditModal(e.target.dataset.name))
         );
+
+        // Delete Hero
+        document.querySelectorAll(".delete-btn").forEach((btn) =>
+            btn.addEventListener("click", (e) => deleteHero(e.target.dataset.name)) // Usando data-name para capturar o nome
+        );
+
     } catch (error) {
         console.error("Erro ao atualizar o carrossel:", error);
     }
 }
-
 async function viewHero(heroName) {
     try {
         console.log("Enviando nome do herói:", heroName);
@@ -101,6 +106,33 @@ async function viewHero(heroName) {
     } catch (error) {
         console.error("Erro ao buscar detalhes do herói:", error);
         alert("Não foi possível carregar as informações do herói.");
+    }
+}
+async function deleteHero(heroName) {
+    try {
+        console.log(JSON.stringify({ nome_heroi: heroName }));
+        console.log("Nome do herói a ser excluído:", heroName);
+
+        const response = await fetch("http://localhost:8080/delete", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ nome_heroi: heroName }), // Envia o nome do herói para ser excluído
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao excluir o herói: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log("Herói excluído com sucesso:", result);
+
+        // Atualiza o carrossel após a exclusão
+        updateCarousel();
+    } catch (error) {
+        console.error("Erro ao excluir o herói:", error);
+        alert("Não foi possível excluir o herói.");
     }
 }
 
@@ -207,6 +239,8 @@ async function saveHeroChanges() {
         alert('Não foi possível salvar as alterações do herói.');
     }
 }
+
+
 
 
 entityForm.addEventListener("submit", (e) => {
