@@ -5,6 +5,15 @@ const createModal = document.getElementById("create-modal");
 const closeModalBtn = document.getElementById("close-modal");
 const entityForm = document.getElementById("entity-form");
 const heroesCarousel = document.getElementById("heroes-carousel");
+const nameFilter = document.getElementById("name-filter");
+const statusFilter = document.getElementById("status-filter");
+const popularityInput = document.getElementById("popularity-input");
+const applyFilterBtn = document.getElementById("apply-filter");
+
+nameFilter.removeEventListener("input", updateCarousel);
+statusFilter.removeEventListener("change", updateCarousel);
+popularityInput.removeEventListener("input", updateCarousel);
+applyFilterBtn.addEventListener("click", updateCarousel);
 
 let editingHeroName = null;
 
@@ -18,8 +27,20 @@ function closeModal() {
     editingHeroName = null;
 }
 
-function saveHeroesToLocalStorage() {
-    localStorage.setItem("heroes", JSON.stringify(heroes));
+function updateHeroImage(heroName, imageElement) {
+    const imagePath = `./images/${heroName.toLowerCase().replace(/ /g, "_")}.jpeg`;
+    
+    // Testa se a imagem existe
+    const img = new Image();
+    img.onerror = () => {
+        // Se a imagem não existir, usa a imagem padrão
+        imageElement.style.backgroundImage = `url('./images/default.jpeg')`;
+    };
+    img.onload = () => {
+        // Se a imagem existir, usa ela
+        imageElement.style.backgroundImage = `url('${imagePath}')`;
+    };
+    img.src = imagePath;
 }
 
 async function updateCarousel() {
@@ -30,45 +51,75 @@ async function updateCarousel() {
         }
 
         const heroes = await response.json();
-
         heroesCarousel.innerHTML = "";
-
-        heroes.forEach((heroName, index) => {
-            const card = document.createElement("div");
-            card.classList.add("carousel-item");
-
-            const imagePath = `images/${heroName.toLowerCase().replace(/ /g, "_")}.jpeg`;
-
-            card.innerHTML = `
-                <div class="hero-image1" style="background-image: url('${imagePath}')"></div>
-                <h3>${heroName}</h3>
-                <button class="view-btn" data-name="${heroName}">Ver</button>
-                <button class="edit-btn" data-name="${heroName}">Editar</button>
-                <button class="delete-btn" data-name="${heroName}">Excluir</button>
-            `;
         
-            heroesCarousel.appendChild(card);
-        });
+        for (const heroName of heroes) {
+            const detailsResponse = await fetch("http://localhost:8080/heroi", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ nome_heroi: heroName }),
+            });
+            
+            if (!detailsResponse.ok) continue;
+            
+            const heroDetails = await detailsResponse.json();
+            
+            // Aplicar filtros
+            const nameMatch = !nameFilter.value || 
+                            heroName.toLowerCase().includes(nameFilter.value.toLowerCase());
+            const statusMatch = !statusFilter.value || 
+                            heroDetails.status_atividade === statusFilter.value;
+            const popularityMatch = !popularityInput.value || 
+                            heroDetails.popularidade >= parseInt(popularityInput.value || 0);
+            
+            if (nameMatch && statusMatch && popularityMatch) {
+                const card = document.createElement("div");
+                card.classList.add("carousel-item");
 
-        // View Hero
-        document.querySelectorAll(".view-btn").forEach((btn) =>
+                // Criar o elemento da imagem
+                const heroImage = document.createElement("div");
+                heroImage.classList.add("hero-image1");
+                
+                // Atualizar a imagem usando a nova função
+                updateHeroImage(heroName, heroImage);
+
+                // Primeiro adiciona a imagem
+                card.appendChild(heroImage);
+                
+                // Depois adiciona o resto do conteúdo
+                const contentDiv = document.createElement("div");
+                contentDiv.innerHTML = `
+                    <h3>${heroName}</h3>
+                    <button class="view-btn" data-name="${heroName}">Ver</button>
+                    <button class="edit-btn" data-name="${heroName}">Editar</button>
+                    <button class="delete-btn" data-name="${heroName}">Excluir</button>
+                `;
+                card.appendChild(contentDiv);
+            
+                heroesCarousel.appendChild(card);
+            }
+        }
+
+        // Adicionar event listeners aos botões
+        document.querySelectorAll(".view-btn").forEach(btn =>
             btn.addEventListener("click", (e) => viewHero(e.target.dataset.name))
         );
 
-        // Edit Hero
-        document.querySelectorAll(".edit-btn").forEach((btn) =>
+        document.querySelectorAll(".edit-btn").forEach(btn =>
             btn.addEventListener("click", (e) => openEditModal(e.target.dataset.name))
         );
 
-        // Delete Hero
-        document.querySelectorAll(".delete-btn").forEach((btn) =>
-            btn.addEventListener("click", (e) => deleteHero(e.target.dataset.name)) // Usando data-name para capturar o nome
+        document.querySelectorAll(".delete-btn").forEach(btn =>
+            btn.addEventListener("click", (e) => deleteHero(e.target.dataset.name))
         );
 
     } catch (error) {
         console.error("Erro ao atualizar o carrossel:", error);
     }
 }
+
 async function viewHero(heroName) {
     try {
         console.log("Enviando nome do herói:", heroName);
@@ -103,6 +154,10 @@ async function viewHero(heroName) {
             Força: ${heroDetails.forca}
             Poderes: ${heroDetails.poder.length > 0 ? heroDetails.poder.join(", ") : "Nenhum"}
         `);
+        // Colocar isso dentro daqui /\
+        // Vitorias: ${heroDetails.vitorias}
+        // Derrotas: ${heroDetails.derrotas}
+
     } catch (error) {
         console.error("Erro ao buscar detalhes do herói:", error);
         alert("Não foi possível carregar as informações do herói.");
