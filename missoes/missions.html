@@ -10,17 +10,17 @@
     <header>
         <img src="../images/vought-meta.png" alt="Vought Logo" class="logo">
         <h1 class="site-title">Gerenciamento de Missões</h1>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="../index.html" class="nav-button">Voltar ao Menu</a></li>
+            </ul>
+        </nav>
     </header>
     <main>
         <section class="mission-list">
             <h2>Missões Registradas:</h2>
             <div class="mission-container" id="mission-list">
-                <!-- Missões serão carregadas dinamicamente aqui -->
             </div>
-        </section>
-        <section class="actions">
-            <h2>Criar Nova Missão</h2>
-            <button id="create-mission-btn">Nova Missão</button>
         </section>
 
         <div id="create-modal" class="modal hidden">
@@ -29,23 +29,33 @@
                 <form id="mission-form">
                     <label for="mission-name">Nome da Missão:</label>
                     <input type="text" id="mission-name" required>
-
+                
                     <label for="mission-description">Descrição:</label>
                     <textarea id="mission-description" required></textarea>
-
-                    <label for="mission-difficulty">Dificuldade(1 a 10):</label>
-                    <input type="number" id="mission-difficulty" min="1" max="10" required>
-
-                    <label for="mission-heroes">Heróis Designados:</label>
-                    <input type="text" id="mission-heroes" required>
-
-                    <label for="mission-result">Resultado(Sucesso/Fracasso):</label>
-                    <select id="mission-result">
-                        <option value="success">Sucesso</option>
-                        <option value="failure">Fracasso</option>
+                
+                    <label for="mission-difficulty">Nível de Dificuldade:</label>
+                    <select id="mission-difficulty" required>
+                        <option value="1">1 - Muito Fácil</option>
+                        <option value="2">2 - Fácil</option>
+                        <option value="3">3 - Moderado</option>
+                        <option value="4">4 - Desafiador</option>
+                        <option value="5">5 - Difícil</option>
+                        <option value="6">6 - Muito Difícil</option>
+                        <option value="7">7 - Extremo</option>
+                        <option value="8">8 - Heróico</option>
+                        <option value="9">9 - Lendário</option>
+                        <option value="10">10 - Impossível</option>
                     </select>
-
-                    <button type="submit">Salvar Missão</button>
+                
+                    <label for="mission-result">Resultado:</label>
+                    <select id="mission-result" required>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Sucesso">Sucesso</option>
+                        <option value="Fracasso">Fracasso</option>
+                    </select>
+                    <label for="mission-heroes">Heróis (separados por vírgula):</label>
+                    <input type="text" id="mission-heroes" required>
+                    <button type="submit" id="submit-btn">Salvar Missão</button>
                     <button type="button" id="close-modal">Cancelar</button>
                 </form>
             </div>

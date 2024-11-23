@@ -168,8 +168,6 @@ crimeForm.addEventListener("submit", async (event) => {
     };
 
     try {
-        // Aqui você implementará a chamada à API para salvar o crime
-        // await fetch('http://localhost:8080/adicionarcrime', {...});
         
         crimes.push(newCrime);
         renderCrimeList();

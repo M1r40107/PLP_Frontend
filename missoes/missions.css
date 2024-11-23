@@ -8,19 +8,18 @@ body {
 
 header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    padding: 15px 30px;
-    background-color: #1d1d1d;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    align-items: center;
+    padding: 25px;
+    background: linear-gradient(to right, #1a1a1a, #2d2d2d);
+    border-bottom: 2px solid #333;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .logo {
-    width: 100px;
+    width: 120px;
     margin-right: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .site-title {
@@ -29,6 +28,11 @@ header {
     color: white;
     text-transform: uppercase;
     letter-spacing: 2px;
+    background: linear-gradient(45deg, #1d72b8, #28a745);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 main {
@@ -47,12 +51,13 @@ main {
 }
 
 .mission-item {
-    background-color: #222;
-    padding: 20px;
-    border-radius: 10px;
+    background: linear-gradient(145deg, #2a2a2a, #222);
+    padding: 25px;
+    border-radius: 15px;
     width: calc(33.333% - 30px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .mission-item:hover {
@@ -61,9 +66,12 @@ main {
 }
 
 .mission-item h3 {
-    color: #1d72b8;
-    margin-bottom: 10px;
-    font-size: 18px;
+    background: linear-gradient(45deg, #1d72b8, #28a745);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 20px;
+    margin-bottom: 15px;
 }
 
 .mission-item p {
@@ -81,12 +89,16 @@ button {
     background-color: #1d72b8;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 12px 24px;
     margin: 10px 0;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
     transition: background-color 0.3s;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 button:hover {
@@ -118,9 +130,10 @@ button:disabled {
 }
 
 .modal-content {
-    background-color: #222;
-    padding: 30px;
-    border-radius: 10px;
+    background: linear-gradient(145deg, #2a2a2a, #222);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 35px;
     width: 400px;
     max-width: 90%;
     text-align: center;
@@ -134,14 +147,15 @@ button:disabled {
 
 input, textarea, select {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin: 10px 0;
-    border: 1px solid #555;
-    border-radius: 5px;
-    background-color: #1d1d1d;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background-color: rgba(29, 29, 29, 0.8);
     color: white;
     font-size: 14px;
     box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
 input:focus, textarea:focus, select:focus {
@@ -193,11 +207,11 @@ button#close-modal:hover {
 }
 
 .edit-btn {
-    background-color: #ffc107;
+    background-color: #1d72b8;
 }
 
 .edit-btn:hover {
-    background-color: #e0a800;
+    background-color: #155a8a;
 }
 
 .delete-btn {
@@ -206,4 +220,54 @@ button#close-modal:hover {
 
 .delete-btn:hover {
     background-color: #c82333;
+}
+
+#mission-heroes {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #1d1d1d;
+    color: white;
+    font-size: 14px;
+}
+
+#mission-heroes:focus {
+    border-color: #1d72b8;
+    outline: none;
+    box-shadow: 0 0 5px rgba(29, 114, 184, 0.5);
+}
+
+/* Estilos para a navegação */
+nav {
+    margin-left: auto;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.nav-button {
+    background: linear-gradient(45deg, #1d72b8, #155a8a);
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button:hover {
+    background-color: #155a8a;
+}
+
+/* Animações suaves */
+.mission-item, button, input, textarea, select {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

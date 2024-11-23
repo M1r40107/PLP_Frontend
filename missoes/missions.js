@@ -1,17 +1,10 @@
 const missions = [];
 const missionList = document.getElementById("mission-list");
-const createMissionBtn = document.getElementById("create-mission-btn");
 const createModal = document.getElementById("create-modal");
 const closeModalBtn = document.getElementById("close-modal");
 const missionForm = document.getElementById("mission-form");
 let editingMissionIndex = null; // Para identificar se estamos editando uma missão
 
-// Mostrar o modal de criação
-createMissionBtn.addEventListener("click", () => {
-    createModal.classList.remove("hidden");
-    missionForm.reset(); // Limpar formulário
-    editingMissionIndex = null; // Garantir que não está editando
-});
 
 // Fechar o modal
 closeModalBtn.addEventListener("click", () => {
@@ -69,75 +62,141 @@ function updateMissionList(missions) {
             <p><strong>Dificuldade:</strong> ${mission.nivel_dificuldade}</p>
             <p><strong>Herói:</strong> ${mission.nome_heroi}</p>
             <p><strong>Resultado:</strong> ${mission.resultado || 'Pendente'}</p>
-            <p><strong>Recompensa:</strong> ${mission.recompensa || 'A definir'}</p>
-            <button class="edit-btn" data-id="${mission.id_missao}">Editar</button>
-            <button class="delete-btn" data-id="${mission.id_missao}">Excluir</button>
+            <div class="mission-actions">
+                <button class="edit-btn" data-id="${mission.id_missao}">Editar</button>
+                <button class="delete-btn" data-id2="${mission.id_missao}">Excluir</button>
+            </div>
         `;
+
+        // Adicionar event listeners para os botões
+        const editBtn = missionItem.querySelector('.edit-btn');
+        const deleteBtn = missionItem.querySelector('.delete-btn'); // Adicionar esta linha
+        editBtn.addEventListener('click', handleEditMission);
+        deleteBtn.addEventListener('click', handleDeleteMission);
 
         missionList.appendChild(missionItem);
     });
-
-    // Adicionar eventos aos botões
-    document.querySelectorAll(".edit-btn").forEach((btn) => {
-        btn.addEventListener("click", handleEditMission);
-    });
-    document.querySelectorAll(".delete-btn").forEach((btn) => {
-        btn.addEventListener("click", handleDeleteMission);
-    });
 }
-
-// Adicionar ou editar missão
-missionForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById("mission-name").value;
-    const description = document.getElementById("mission-description").value;
-    const difficulty = parseInt(document.getElementById("mission-difficulty").value);
-    const heroes = document.getElementById("mission-heroes").value.split(",");
-    const result = document.getElementById("mission-result").value;
-
-    const reward = result === "success" ? "Força +1 / Popularidade +5" : "Força -1 / Popularidade -5";
-
-    const missionData = { name, description, difficulty, heroes, result, reward };
-
-    if (editingMissionIndex !== null) {
-        // Editar missão existente
-        missions[editingMissionIndex] = missionData;
-        editingMissionIndex = null;
-    } else {
-        // Adicionar nova missão
-        missions.push(missionData);
-    }
-
-    createModal.classList.add("hidden");
-    missionForm.reset();
-});
-
-
 
 // Editar missão
-function handleEditMission(event) {
-    const index = event.target.dataset.index;
-    const mission = missions[index];
+async function handleEditMission(event) {
+    const missionId = event.target.getAttribute('data-id');
+    if (!missionId) {
+        console.error('ID da missão não encontrado');
+        return;
+    }
 
-    // Preencher o formulário com os dados da missão
-    document.getElementById("mission-name").value = mission.name;
-    document.getElementById("mission-description").value = mission.description;
-    document.getElementById("mission-difficulty").value = mission.difficulty;
-    document.getElementById("mission-heroes").value = mission.heroes.join(", ");
-    document.getElementById("mission-result").value = mission.result;
+    try {
+        const response = await fetch(`http://localhost:8080/missao/${missionId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
 
-    editingMissionIndex = index; // Salvar índice para edição
-    createModal.classList.remove("hidden");
-}
+        if (!response.ok) throw new Error('Erro ao buscar dados da missão');
 
-// Excluir missão
-function handleDeleteMission(event) {
-    const index = event.target.dataset.index;
+        const mission = await response.json();
 
-    // Confirmar exclusão
-    if (confirm("Tem certeza que deseja excluir esta missão?")) {
-        missions.splice(index, 1); // Remover missão
-        updateMissionList(); // Atualizar lista
+        // Preencher o formulário
+        document.getElementById("mission-name").value = mission.nome_missao;
+        document.getElementById("mission-description").value = mission.descricao;
+        document.getElementById("mission-difficulty").value = mission.nivel_dificuldade;
+        document.getElementById("mission-result").value = mission.resultado;
+        document.getElementById("mission-heroes").value = mission.nome_heroi || '';
+
+        // Configurar o formulário para edição
+        const form = document.getElementById("mission-form");
+        form.dataset.editingId = missionId;
+        
+        // Atualizar título do modal
+        document.querySelector(".modal-content h2").textContent = "Editar Missão";
+        
+        // Mostrar modal
+        createModal.classList.remove("hidden");
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao carregar dados da missão');
     }
 }
+
+// Editar missão
+async function handleDeleteMission(event) {
+    const missionId = event.target.getAttribute('data-id2');
+    if (!missionId) {
+        console.error('ID da missão não encontrado');
+        return;
+    }
+
+    if (!confirm('Tem certeza que deseja excluir esta missão?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8080/missao/${missionId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) throw new Error('Erro ao excluir a missão');
+
+        // Recarregar a lista de missões após excluir
+        await loadMissions();
+        alert('Missão excluída com sucesso!');
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao excluir a missão');
+    }
+}
+
+// Modificar o evento de submit do formulário
+missionForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const missionId = missionForm.dataset.editingId;
+    
+    // Se não houver ID de edição, não prossegue
+    if (!missionId) {
+        alert('Operação inválida: ID da missão não encontrado');
+        return;
+    }
+
+    const missionData = {
+        nome_missao: document.getElementById("mission-name").value,
+        descricao: document.getElementById("mission-description").value,
+        nivel_dificuldade: document.getElementById("mission-difficulty").value,
+        resultado: document.getElementById("mission-result").value,
+        nome_heroi: document.getElementById("mission-heroes").value
+    };
+
+    try {
+        const response = await fetch(`http://localhost:8080/missao/${missionId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(missionData)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erro ao atualizar missão: ${response.status} - ${errorText}`);
+        }
+
+        // Limpar o formulário e fechar o modal
+        missionForm.reset();
+        missionForm.dataset.editingId = '';
+        createModal.classList.add("hidden");
+        
+        // Atualizar a lista de missões
+        await loadMissions();
+        
+        alert('Missão atualizada com sucesso!');
+    } catch (error) {
+        console.error('Erro ao atualizar missão:', error);
+        alert(`Erro ao atualizar missão: ${error.message}`);
+    }
+});
