@@ -1,3 +1,19 @@
+header a {
+    text-decoration: none;
+    display: inline-block;
+}
+
+.logo {
+    width: 140px;
+    margin-right: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
 .battle-container {
     max-width: 1200px;
     margin: 40px auto;

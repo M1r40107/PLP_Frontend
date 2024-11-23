@@ -16,10 +16,20 @@ header {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+header a {
+    text-decoration: none;
+    display: inline-block;
+}
+
 .logo {
-    width: 120px;
+    width: 140px;
     margin-right: 20px;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
 }
 
 .site-title {
@@ -252,19 +262,22 @@ nav {
 }
 
 .nav-button {
-    background: linear-gradient(45deg, #1d72b8, #155a8a);
     color: white;
     text-decoration: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-    font-weight: 600;
-    letter-spacing: 1px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #1d72b8, #2196f3);
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    border: 2px solid #2196f3;
+    font-weight: 500;
 }
 
 .nav-button:hover {
-    background-color: #155a8a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+    background: transparent;
+    border-color: #2196f3;
 }
 
 /* Animações suaves */

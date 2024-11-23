@@ -3,19 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Crimes</title>
+    <title>Lista de Crimes - Vought International</title>
     <link rel="stylesheet" href="crimes.css">
 </head>
 <body>
     <header>
-        <h1>Cadastro e Gerenciamento de Crimes</h1>
+        <a href="../index.html">
+            <img src="../images/vought-meta.jpeg" alt="Vought Logo" class="logo">
+        </a>
+        <h1 class="site-title">Lista de Crimes</h1>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="../index.html" class="nav-button">Voltar ao Menu</a></li>
+            </ul>
+        </nav>
     </header>
 
     <main>
-        <section>
-            <button id="add-crime-btn">Adicionar Crime</button>
-        </section>
-
         <section id="crime-list-container">
             <h2>Lista de Crimes</h2>
             <ul id="crime-list"></ul>
@@ -24,23 +28,25 @@
         <div class="modal hidden" id="crime-modal">
             <div class="modal-content">
                 <form id="crime-form">
-                    <label for="crime-title">Título do Crime:</label>
-                    <input type="text" id="crime-title" required>
-        
+                    <label for="crime-select">Tipo do Crime:</label>
+                    <select id="crime-select" required>
+                        <option value="">Selecione um crime</option>
+                    </select>
+                
                     <label for="crime-description">Descrição:</label>
                     <textarea id="crime-description" rows="4" required></textarea>
-        
+                
                     <label for="crime-severity">Gravidade (1-10):</label>
                     <input type="number" id="crime-severity" min="1" max="10" required>
-        
+                
                     <label for="crime-date">Data do Crime:</label>
                     <input type="date" id="crime-date" required>
-        
+                
                     <label for="responsible-hero">Herói Responsável:</label>
                     <select id="responsible-hero" required>
                         <option value="">Selecione um herói</option>
                     </select>
-        
+                
                     <button type="submit">Salvar</button>
                     <button type="button" id="close-modal">Cancelar</button>
                 </form>

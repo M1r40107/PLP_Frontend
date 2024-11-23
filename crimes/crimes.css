@@ -6,14 +6,14 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* Cabeçalho */
 header {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background-color: #1d1d1d;
-    border-bottom: 2px solid #333;
+    padding: 25px 50px;
+    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+    border-bottom: 1px solid #444;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 header h1 {
@@ -21,13 +21,32 @@ header h1 {
     color: #ffffff;
 }
 
+header a {
+    text-decoration: none;
+    display: inline-block;
+}
+
+.logo {
+    width: 140px;
+    margin-right: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
 
 .site-title {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: bold;
     color: white;
     text-transform: uppercase;
     letter-spacing: 2px;
+    background: linear-gradient(45deg, #1d72b8, #2196f3);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 /* Botão principal */
@@ -69,11 +88,21 @@ button:hover {
 }
 
 .crime-item {
-    background-color: #2c2c2c;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 10px;
+    background: linear-gradient(145deg, #2c2c2c, #252525);
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     list-style: none;
+    border: 1px solid #444;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.crime-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .crime-info {
@@ -81,9 +110,13 @@ button:hover {
 }
 
 .crime-info h3 {
-    color: #1d72b8;
-    margin-bottom: 10px;
-    font-size: 18px;
+    font-size: 22px;
+    margin-bottom: 15px;
+    background: linear-gradient(45deg, #2196f3, #1d72b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
 }
 
 .crime-info p {
@@ -213,4 +246,69 @@ button:hover {
 
 .modal-content button#close-modal:hover {
     background-color: #777;
+}
+
+/* Botões mais modernos */
+.crime-actions button {
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.view-btn {
+    background: linear-gradient(45deg, #1d72b8, #2196f3);
+}
+
+.edit-btn {
+    background: linear-gradient(45deg, #1e8e3e, #34a853);
+}
+
+.delete-btn {
+    background: linear-gradient(45deg, #dc3545, #c42b2b);
+}
+
+/* Modal mais elegante */
+.modal-content {
+    background: linear-gradient(145deg, #2c2c2c, #252525);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    max-width: 500px;
+    width: 90%;
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+    background: #2a2a2a;
+    border: 2px solid #444;
+    border-radius: 10px;
+    padding: 12px;
+    transition: all 0.3s ease;
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus,
+.modal-content select:focus {
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+}
+
+.nav-button {
+    background: linear-gradient(45deg, #1d72b8, #155a8a);
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button:hover {
+    background-color: #155a8a;
 }

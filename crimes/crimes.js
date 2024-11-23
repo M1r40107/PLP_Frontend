@@ -1,12 +1,7 @@
-const addCrimeBtn = document.getElementById("add-crime-btn");
 const crimeModal = document.getElementById("crime-modal");
 const crimeForm = document.getElementById("crime-form");
 const crimeList = document.getElementById("crime-list");
 const closeModalBtn = document.getElementById("close-modal");
-const heroiSelect = document.getElementById("responsible-hero");
-
-let crimes = [];
-let herois = [];
 
 // Função para carregar os heróis do backend
 async function carregarHerois() {
@@ -45,6 +40,7 @@ async function carregarCrimes() {
             })
         });
         const data = await response.json();
+        console.log('Crimes carregados:', data); // Debug
         crimes = data;
         renderCrimeList();
     } catch (error) {
@@ -65,13 +61,13 @@ function hideCrimeModal() {
 function renderCrimeList() {
     crimeList.innerHTML = '';
     crimes.forEach(crime => {
-        const li = document.createElement('li');
-        li.className = 'crime-item';
+        const data = crime.data_crime ? new Date(crime.data_crime) : new Date();
+        const dataFormatada = data.toLocaleDateString('pt-BR');
+
+        const crimeItem = document.createElement('li');
+        crimeItem.className = 'crime-item';
         
-        // Formatando a data para exibição (se existir)
-        const dataFormatada = crime.data_crime ? new Date(crime.data_crime).toLocaleDateString('pt-BR') : 'Não informada';
-        
-        li.innerHTML = `
+        crimeItem.innerHTML = `
             <div class="crime-info">
                 <h3>${crime.nome_crime || 'Nome não informado'}</h3>
                 <p><strong>Severidade:</strong> ${crime.severidade || 'Não informada'}</p>
@@ -80,106 +76,106 @@ function renderCrimeList() {
                 <p><strong>Herói:</strong> ${crime.nome_heroi || 'Não informado'}</p>
             </div>
             <div class="crime-actions">
-                <button class="edit-btn" onclick="editarCrime(${crime.id_crime})">
-                    <i class="fas fa-edit"></i> Editar
-                </button>
-                <button class="delete-btn" onclick="apagarCrime(${crime.id_crime})">
-                    <i class="fas fa-trash"></i> Apagar
-                </button>
+                <button class="delete-btn" data-crime-id="${crime.id_crime}">Excluir</button>
             </div>
         `;
         
-        crimeList.appendChild(li);
+        // Adicionar event listeners após criar os elementos
+        const deleteBtn = crimeItem.querySelector('.delete-btn');
+        deleteBtn.addEventListener('click', () => {
+            console.log('Botão excluir clicado para crime:', crime.id_crime);
+            handleDeletecrime(crime.id_crime, crime.nome_heroi);
+        });
+
+        crimeList.appendChild(crimeItem);
     });
 }
 
-// Função para editar crime
-async function editarCrime(id) {
-    const crime = crimes.find(c => c.id_crime === id);
-    if (!crime) return;
 
-    // Preenche o modal com os dados do crime
-    document.getElementById("crime-title").value = crime.nome_crime;
-    document.getElementById("crime-description").value = crime.descricao_evento;
-    document.getElementById("crime-severity").value = crime.severidade;
-    document.getElementById("crime-date").value = crime.data_crime;
-    document.getElementById("responsible-hero").value = crime.nome_heroi;
-
-    // Mostra o modal
-    showCrimeModal();
-
-    // Modifica o comportamento do formulário para atualizar ao invés de criar
-    crimeForm.onsubmit = async (e) => {
-        e.preventDefault();
-        
-        const crimeAtualizado = {
-            id_crime: id,
-            nome_crime: document.getElementById("crime-title").value,
-            descricao_evento: document.getElementById("crime-description").value,
-            severidade: parseInt(document.getElementById("crime-severity").value, 10),
-            data_crime: document.getElementById("crime-date").value,
-            nome_heroi: document.getElementById("responsible-hero").value,
-        };
-
-        try {
-            // Implementar chamada à API para atualizar o crime
-            // await fetch('http://localhost:8080/atualizarcrime', {...});
-            
-            const index = crimes.findIndex(c => c.id_crime === id);
-            crimes[index] = crimeAtualizado;
-            renderCrimeList();
-            hideCrimeModal();
-            
-            // Restaura o comportamento padrão do formulário
-            crimeForm.onsubmit = null;
-        } catch (error) {
-            console.error('Erro ao atualizar crime:', error);
-            alert('Erro ao atualizar o crime');
-        }
-    };
-}
-
-// Função para apagar crime
-async function apagarCrime(id) {
-    if (!confirm('Tem certeza que deseja apagar este crime?')) return;
-
-    try {
-        // Implementar chamada à API para deletar o crime
-        // await fetch(`http://localhost:8080/deletarcrime/${id}`, { method: 'DELETE' });
-        
-        crimes = crimes.filter(crime => crime.id_crime !== id);
-        renderCrimeList();
-    } catch (error) {
-        console.error('Erro ao apagar crime:', error);
-        alert('Erro ao apagar o crime');
-    }
-}
-
-// Modificar o evento de submit do formulário
-crimeForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const newCrime = {
-        nome_crime: document.getElementById("crime-title").value,
-        descricao_evento: document.getElementById("crime-description").value,
-        severidade: parseInt(document.getElementById("crime-severity").value, 10),
-        data_crime: document.getElementById("crime-date").value,
-        id_heroi: document.getElementById("responsible-hero").value,
-    };
-
-    try {
-        
-        crimes.push(newCrime);
-        renderCrimeList();
-        hideCrimeModal();
-    } catch (error) {
-        console.error('Erro ao salvar crime:', error);
-        alert('Erro ao salvar o crime');
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    carregarCrimes();
 });
 
-// Inicialização
-window.addEventListener('load', () => {
-    carregarHerois();
-    carregarCrimes();
+// Editar missão
+async function handleDeletecrime(crimeId, nomeHeroi) {
+    console.log('Tentando deletar crime:', { crimeId, nomeHeroi });
+    
+    if (!crimeId) {
+        console.error('ID do crime não encontrado');
+        return;
+    }
+
+    if (!confirm('Tem certeza que deseja excluir este crime?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:8080/deletecrime/', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id_crime: parseInt(crimeId),
+                nome_heroi: nomeHeroi
+            })
+        });
+
+        if (!response.ok) throw new Error('Erro ao excluir o crime');
+
+        await carregarCrimes();
+        alert('Crime excluído com sucesso!');
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao excluir o crime');
+    }
+}
+
+
+// Modificar o evento de submit do formulário
+crimeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const crimeId = crimeForm.dataset.editingId;
+    if (!crimeId) {
+        alert('Operação inválida: ID do crime não encontrado');
+        return;
+    }
+
+    const crimeData = {
+        id_crime: parseInt(crimeId),
+        nome_crime: document.getElementById("crime-select").value,
+        descricao_evento: document.getElementById("crime-description").value,
+        severidade: parseInt(document.getElementById("crime-severity").value),
+        data_crime: document.getElementById("crime-date").value,
+        nome_heroi: document.getElementById("responsible-hero").value
+    };
+
+    try {
+        const response = await fetch(`http://localhost:8080/editacrime/${crimeId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(crimeData)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erro ao atualizar crime: ${response.status} - ${errorText}`);
+        }
+
+        // Limpar o formulário e fechar o modal
+        crimeForm.reset();
+        crimeForm.dataset.editingId = '';
+        document.getElementById("crime-modal").classList.add("hidden");
+        
+        // Atualizar a lista de crimes
+        await carregarCrimes();
+        
+        alert('Crime atualizado com sucesso!');
+    } catch (error) {
+        console.error('Erro ao atualizar crime:', error);
+        alert(`Erro ao atualizar crime: ${error.message}`);
+    }
 });
